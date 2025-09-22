@@ -35,7 +35,7 @@ def sign_in():
     form = LoginForm()
     if form.validate_on_submit(): 
         user = form.username.data
-        return redirect(url_for('index.index'), render_template('base.html',title="Signed in", user=f"{user}"))
+        return render_template('base.html',title="Signed in", user=f"{user}")
     else: 
         return render_template('sign_in.html', title='Sign in', form=form)
     
