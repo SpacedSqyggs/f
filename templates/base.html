@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+{% if title %}
+<title> {{ title }} -- Goink </title>
+{% else %}
+<title>Goink!</title>
+{% endif %}
+<body>
+    {% if user %}
+    <h1>Hello, {{user}} </h1>
+    {% else %}
+    <h1>Hello, Unwanted</h1>
+    {% endif %}
+<div>
+Nav Bar: 
+<a href="{{url_for('index.index')}}">Home</a>
+<a href="{{url_for('signIn.sign_in')}}">Sign in</a>
+
+</div>
+<hr>
+{% block content %} {% endblock%}
+</body>
+
+</html>
