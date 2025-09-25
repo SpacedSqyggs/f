@@ -1,8 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, session, redirect, url_for
 from flask_wtf import FlaskForm 
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
-from .index import *
 sign_in_bp = Blueprint("signIn",__name__)
 
 
@@ -23,6 +22,8 @@ class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
 #password field
     password = PasswordField('Password', validators=[DataRequired()])
+# email field 
+    email = StringField('Email')
 #remember me field
     remember_me = BooleanField('Remember me')
 #Sign in button 
@@ -31,11 +32,30 @@ class LoginForm(FlaskForm):
 
 @sign_in_bp.route('/sign-in', methods=['GET', 'POST'])
 def sign_in(): 
+    if 'user' in session:
+        session.permanent = True
+        return redirect(url_for("signIn.user_info"))
 #creating variable form to be linked to creation of class LoginForm
     form = LoginForm()
-    if form.validate_on_submit(): 
-        user = form.username.data
-        return render_template('base.html',title="Signed in", user=user)
+    if form.validate_on_submit():
+        user_data = {
+        'username': form.username.data,
+        'password' : form.password.data,
+        'email' : form.email.data
+        }
+        session['user'] = user_data
+        return redirect(url_for("signIn.user_info"))
+        #return f"<p>username={username}, password={password}, email={email}</p>"
+        #return render_template('base.html',title="Signed in")
+   
+    return render_template('sign_in.html', title='Sign in', form=form)
+
+
+@sign_in_bp.route('/user-info')
+def user_info(): 
+    if  "user" in session: 
+        user_data = session['user']
+        return f"<h1>Username:{user_data.get('username')}</h1><p>password:{user_data.get('password')}</p><p>email:{user_data.get('email')}</p>"
     else: 
-        return render_template('sign_in.html', title='Sign in', form=form)
+        return redirect(url_for("signIn.sign_in"))
     
